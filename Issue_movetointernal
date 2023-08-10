@@ -1,0 +1,18 @@
+ISSUE :
+When running the script with coreELEC v9.2.8 on Tanix boxes
+The move to internal ain't working.
+
+BOXES AFFECTED :
+smb://172.31.145.103/
+smb://172.31.145.106/
+
+OBSERVATIONS :
+The internal storage is /dev/sda1
+
+SOLUTION :
+For now, I manually ran the moving to internal from USB booted OS,
+```printf 'yes\ny\nn\n'|installtointernal```
+
+FIX :
+In the ansible, ``when: internal_storage is regex("/dev/mmc.*") ``
+Need to work on this regex check.

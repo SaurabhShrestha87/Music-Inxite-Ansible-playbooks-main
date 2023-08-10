@@ -1,0 +1,6 @@
+---
+- name: Including openvpn role
+  gather_facts: false
+  hosts: test_box
+  roles: 
+    - role: iptables

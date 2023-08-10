@@ -1,0 +1,11 @@
+---
+- hosts: "boxes"
+# - hosts: "test_box"
+  tasks:
+    - name: Get hostname from box
+      shell: echo $HOSTNAME
+      register: hostname_box
+    - set_fact:
+        hostname_box={{ hostname_box.stdout }}
+    - import_role:
+       name: openvpn

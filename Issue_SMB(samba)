@@ -1,0 +1,6 @@
+systemctl restart nmbd
+systemctl restart smbd
+systemctl status nmbd -l
+systemctl status smbd -l
+
+smb://172.31.145.103/

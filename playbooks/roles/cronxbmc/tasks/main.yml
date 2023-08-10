@@ -1,0 +1,83 @@
+
+    - name: Copy autoexec.py file if Coreelec version == 9.2
+      ansible.builtin.copy:
+        src: 'cronxbmc/autoexec.py'
+        dest: '/storage/.kodi/userdata/autoexec.py'
+        force: yes
+      register: autoexec_old_result
+      when: coreelec_version.stdout == "9.2"
+
+    - name: If version not legacy 9.2 create autoexec service
+      ansible.builtin.file:
+        path: /storage/.kodi/addons/service.autoexec/
+        state: directory
+      register: autoexec_new_result
+      when: coreelec_version.stdout != "9.2"
+
+    - name: If version not legacy 9.2 copy autoexec addon service
+      ansible.builtin.copy:
+        src: 'cronxbmc/autoexec_addon.xml'
+        dest: '/storage/.kodi/addons/service.autoexec/addon.xml'
+        force: yes
+      when: coreelec_version.stdout != "9.2"
+
+    - name: Copy autoexec.py file to addon
+      ansible.builtin.copy:
+        src: 'cronxbmc/autoexec_new_gen.py'
+        dest: '/storage/.kodi/addons/service.autoexec/autoexec.py'
+        force: yes 
+      when: coreelec_version.stdout != "9.2"
+
+#cronxbmc service
+    - name: Copy cronxbmc archive file
+      copy:
+        src: 'cronxbmc/{{ item }}'
+        dest: '/tmp/{{ item }}'
+        force: no 
+      loop:
+      - "{{ cronxbmc_addon_file }}"
+
+    - name: Extract cronxbmc plugin #because busy box
+      shell: "cd /tmp/;unzip -o {{ cronxbmc_addon_file }} -d /storage/.kodi/addons/;rm /tmp/{{ cronxbmc_addon_file }}"
+
+
+    - name: create directory with parent directories
+      file:
+        path: /storage/.kodi/userdata/addon_data/service.cronxbmc/
+        state: directory
+
+    - name: Copy cron.xml file
+      copy:
+        src: 'cronxbmc/{{ item }}'
+        dest: '/storage/.kodi/userdata/addon_data/service.cronxbmc/{{ item }}'
+        force: yes 
+      loop:
+      - cron.xml
+
+    - name: Update local addons, restart kodi
+      shell: kodi-send --action="UpdateLocalAddons";systemctl restart kodi.service
+
+    - name: Enable cronxbmc plugin for new version Coreelec
+      ansible.builtin.shell: |
+       sleep 5;curl 'http://127.0.0.1:8080/jsonrpc?Base' -s \
+       -H 'Authorization: Basic {{ http_token.stdout }}' \
+       -H 'Content-Type: application/json' \
+       -H 'X-Requested-With: XMLHttpRequest' \
+       -d '[{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":["service.cronxbmc",true],"id":8}]'
+      when: coreelec_version.stdout != "9.2"
+
+    - name: Enable autoexec plugin for new version Coreelec
+      ansible.builtin.shell: |
+       curl 'http://127.0.0.1:8080/jsonrpc?Base' -s \
+       -H 'Authorization: Basic {{ http_token.stdout }}' \
+       -H 'Content-Type: application/json' \
+       -H 'X-Requested-With: XMLHttpRequest' \
+       -d '[{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":["service.autoexec",true],"id":8}]' 
+      when: coreelec_version.stdout != "9.2"
+
+    - name: Enable plugin cronxmbc for legacy Coreelec
+      shell: |
+        sleep 5;
+        curl -s -H 'Authorization: Basic {{ http_token.stdout }}' \ 
+        -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"service.cronxbmc","enabled":true},"id":1}' http://127.0.0.1:8080/jsonrpc
+      when: coreelec_version.stdout == "9.2"

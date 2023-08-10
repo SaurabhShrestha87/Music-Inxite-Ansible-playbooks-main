@@ -1,0 +1,56 @@
+  tasks:
+    - name: Copy Pritunl Config File
+      copy:
+        src: files/pritunl.config
+        dest: ~/pritunl.config
+        force: yes
+      loop:
+        - openvpn-pritunl.service
+    - name: Add Pritunl repository to sources.list.d
+      blockinfile:
+        path: /etc/apt/sources.list.d/pritunl.list
+        block: |
+          deb https://repo.pritunl.com/stable/apt jammy main
+
+    - name: Install gnupg package
+      apt:
+        name: gnupg
+        state: present
+
+    - name: Import Pritunl GPG key
+      shell: gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 7568D9BB55FF9E5287D586017AE645C0CF8E292A
+      register: gpg_output
+      changed_when: "'OK' in gpg_output.stdout"
+
+    - name: Export and install Pritunl GPG key
+      shell: gpg --armor --export 7568D9BB55FF9E5287D586017AE645C0CF8E292A
+      register: gpg_export_output
+      changed_when: false
+
+    - name: Save the Pritunl GPG key to a file
+      copy:
+        content: "{{ gpg_export_output.stdout }}"
+        dest: /etc/apt/trusted.gpg.d/pritunl.asc
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install pritunl-client package
+      apt:
+        name: pritunl-client
+        state: present
+
+    - name: Extract remote key archive to /tmp
+      become: yes
+      shell: "cd /tmp/; tar xvf {{ hostname_box }}.tar"
+      register: extracted_files
+
+    - name: Move pritunl.config to the appropriate path
+      become: yes
+      command: mv -f "/tmp/{{ extracted_files.stdout }}" "~/pritunl.config"
+
+    - name: Start Pritunl OpenVPN service
+      service:
+        name: pritunl-client
+        state: started

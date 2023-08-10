@@ -1,0 +1,19 @@
+  - name: Set up authorized_keys for the user root
+    authorized_key: user=root key="{{ item }}"
+    with_file:
+    - keys/patrick_macos.pub
+    - keys/ilia_ubuntu.pub
+    - keys/saurabh_ubuntu.pub
+  - name: Disable ssh password authorized
+    shell: echo  -e SSHD_DISABLE_PW_AUTH=\"true\"\\nSSH_ARGS=\"-o \'PasswordAuthentication no\'\" > /storage/.cache/services/sshd.conf
+  - name: restart sshd.service
+    ansible.builtin.systemd:
+      state: restarted64
+      name: sshd
+    async: 10
+    poll: 5
+    ignore_errors: True
+    when: install is undefined
+  - name: Wait for ssh to come up
+    wait_for: "{{ groups['dynamically_created_hosts'][0] }} port=22 delay=10  timeout=300"
+    when: install is undefined

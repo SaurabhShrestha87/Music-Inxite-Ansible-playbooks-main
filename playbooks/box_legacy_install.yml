@@ -1,0 +1,111 @@
+# - hosts: "boxes"
+- hosts: localhost
+  gather_facts: false
+  vars_prompt:
+    - name: target_host
+      prompt: please enter the target host IP0
+      private: false
+      default: "192.168.1.121"
+  tasks:
+    - add_host:
+        name: "{{ target_host }}"
+        groups: dynamically_created_hosts
+- hosts: dynamically_created_hosts
+  gather_facts: false
+  vars_prompt:
+    - name: hostname
+      prompt: Please insert hostname for new box without domain!
+      private: false
+      # default: "ilia-home-legacy-box"
+      default: "tajine"
+  vars:
+        ansible_ssh_user: root
+        # ansible_ssh_pass: libreelec
+        ansible_ssh_pass: coreelec
+        hostname_box: "{{ hostname }}.musicinxite.com"
+        cronxbmc_addon_file: "cronxbmc-0.1.4.zip"
+        dateutil_addon_file: "script.module.dateutil-2.8.1.zip"
+        module_six_addon_file: "script.module.six-1.15.0.zip"
+        box_timezone: "Singapore"
+        http_password: "music5673"
+        http_user: "kodi"
+        ansible_ssh_common_args: '-o UserKnownHostsFile=/dev/null' #work well
+        install: "true"
+  tasks:
+    - name: Find out playbooks path
+      delegate_to: localhost
+      shell: pwd
+      register: inventory_dir
+    - name: Check openvpn keys in playbooks/roles/openvpn/fiels/keys
+      delegate_to: localhost
+      stat:
+        path: "{{ inventory_dir.stdout }}/roles/openvpn/files/keys/{{ hostname_box }}.tar"
+      register: openvpn_key
+    - name: 'openvpn key check'
+      fail:
+        msg:
+            - Openvpn key file not found in {{ inventory_dir.stdout }}/roles/openvpn/files/keys/{{ hostname_box }}.tar.
+            - Please download  key from https://tunnel.musicinxite.com/ , save key and try again.
+      when: openvpn_key.stat.exists == False
+    #check version
+    - name: Check linux version
+      shell: cat /etc/os-release |grep VERSION_ID |cut -d "\"" -f2
+      register: linux_version
+    - debug:
+        msg: linux version = {{ linux_version.stdout }}
+    - import_role:
+       name: ssh_keys
+
+    - name: Create variable for http managment
+      delegate_to: localhost
+      shell: echo -n '{{ http_user }}:{{ http_password }}'|base64
+      register: http_token
+
+    - name: Check that system load from sdcard
+      shell: |
+        df -h |grep '/flash' | awk '{print $1}'
+      register: internal_storage
+    - debug:
+        msg: Main storage {{ internal_storage.stdout }}
+#------------------Set up openvpn
+    - import_role:
+       name: openvpn
+
+    - name: Get os name
+      shell: "lsb_release -a |cut -d ' ' -f1|awk '{print tolower($0)}'"
+      register: system
+    - name: Print a message
+      ansible.builtin.debug:
+        msg: 'System name {{ system.stdout }}'
+    - name: Add hostname to config
+      shell: |
+        xmlstarlet edit --omit-decl -L \
+        --delete  '//system/hostname' \
+        --subnode '//system' --type elem --name hostname --value {{ hostname_box }} \
+        --insert  '//system/hostanme' --type attr --name hostname --value {{ hostname_box }} \
+        /storage/.kodi/userdata/addon_data/service.{{ system.stdout }}.settings/oe_settings.xml
+
+# -----------------set up webserver
+    - name: Configurate webserver and http auth
+      ansible.builtin.import_role:
+       name: webserver
+# # -----------------INSTALL-libs
+    - import_role:
+       name: libs
+# -----------------------------------INSTALL-CRONXBMC
+    - import_role:
+       name: cronxbmc
+# -----------------------------------Configuration NTP server
+    - name: Configuration NTP server
+      ansible.builtin.import_role:
+        name: ntpserver
+# -----------------------------------Iptables
+    - import_role:
+       name: iptables
+    - name: Disable samba service
+      ansible.builtin.service:
+        name: smbd
+        enabled: no
+        state: stopped
+    - name: Restart kodi.service with new hostname
+      shell: systemctl restart kodi.service

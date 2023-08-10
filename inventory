@@ -1,0 +1,112 @@
+
+# file: develop
+[ilia]
+ilkarvet.ru
+[ilia:vars]
+env=DEV
+ansible_ssh_user=root
+[test_box]
+; 172.31.142.99
+; 127.0.0.1:2222
+; 5.206.19.133:10006
+; 172.31.145.20
+; 192.168.100.40
+172.31.145.98
+; 172.31.145.20
+;192.168.100.27
+; 172.31.145.86
+[test_box:vars]
+env=DEV
+ansible_ssh_user=root
+ansible_ssh_pass=coreelec
+[vm_box]
+192.168.100.27
+[vm_box:vars]
+env=DEV
+ansible_ssh_user=root
+ansible_ssh_pass=libreelec
+# file: production
+[test-servers]
+tunnel.musicinxite.com
+[test-servers:vars]
+env=PROD
+ansible_ssh_user=root
+[digital-ocean-servers]
+devsonic.musicinxite.com
+www.musicinxite.com
+sonos.musicinxite.com
+tunnel.musicinxite.com
+samples.musicinxite.com
+musicinxite.com
+; 172.31.142.13 debian server
+; 172.31.142.15 debian server Capella Singapore Primary
+[digital-ocean-servers:vars]
+env=PROD
+ansible_ssh_user=root
+[boxes]
+; hosts that was unrecheable
+172.31.142.112
+; 172.31.142.118
+; 172.31.142.203
+; ----------------
+; 172.31.142.196
+; 172.31.142.82
+; 172.31.142.83
+; 172.31.142.93
+; 172.31.142.194
+; 172.31.142.73
+; 172.31.142.140
+; 172.31.142.209
+; 172.31.142.151
+; 172.31.142.81
+; 172.31.142.105
+; 172.31.142.92
+; 172.31.142.51
+; 172.31.142.121
+; 172.31.142.87
+; 172.31.142.126
+; 172.31.142.120
+; 172.31.142.94
+; 172.31.142.168
+; 172.31.142.176
+; 172.31.142.119
+; 172.31.142.64
+; 172.31.142.61
+; 172.31.142.70
+; 172.31.142.95
+; 172.31.142.122
+; 172.31.142.200
+; 172.31.142.66
+; 172.31.142.90
+; 172.31.142.201
+; 172.31.142.77
+; 172.31.142.141
+; 172.31.142.211
+; 172.31.142.183
+; 172.31.142.97
+; 172.31.142.71
+; 172.31.142.59
+; 172.31.142.148
+; 172.31.142.116
+; 172.31.142.57
+; 172.31.142.60
+; 172.31.142.149
+; 172.31.142.125
+; 172.31.142.52
+; 172.31.142.190
+; 172.31.142.100
+; 172.31.142.63
+; 172.31.142.208
+; 172.31.142.62
+; 172.31.142.150
+; 172.31.142.74
+; 172.31.142.210
+; 172.31.142.127
+; 172.31.142.91
+; 172.31.142.76
+; 172.31.142.65
+; 172.31.142.75
+; 172.31.142.99
+[boxes:vars]
+env=PROD
+ansible_ssh_user=root

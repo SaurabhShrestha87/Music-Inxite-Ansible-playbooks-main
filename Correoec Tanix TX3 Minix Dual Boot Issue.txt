@@ -1,0 +1,210 @@
+Last login: Thu May 25 17:01:22 on ttys000
+patrickoliver@Patricks-MacBook-Air-M2 Music-Inxite-Ansible-playbooks % ansible-playbook playbooks/box_legacy_install.yml
+[WARNING]: No inventory was parsed, only implicit localhost is available
+[WARNING]: provided hosts list is empty, only localhost is available. Note that
+the implicit localhost does not match 'all'
+please enter the target host IP [172.31.145.102]: 192.168.1.154
+
+PLAY [localhost] ***************************************************************
+
+TASK [add_host] ****************************************************************
+changed: [localhost]
+Please insert hostname for new box without domain? [jaan2]: ritz-sg-club2
+
+PLAY [dynamically_created_hosts] ***********************************************
+
+TASK [Find out playbooks path] *************************************************
+changed: [192.168.1.154 -> localhost]
+
+TASK [Create variable for http managment] **************************************
+changed: [192.168.1.154 -> localhost]
+
+TASK [Check openvpn keys in playbooks/roles/openvpn/fiels/keys] ****************
+ok: [192.168.1.154 -> localhost]
+
+TASK [Check parm is null or invalid] *******************************************
+skipping: [192.168.1.154]
+
+TASK [Check coreelec version] **************************************************
+[WARNING]: Platform linux on host 192.168.1.154 is using the discovered Python
+interpreter at /usr/bin/python3.7, but future installation of another Python
+interpreter could change the meaning of that path. See
+https://docs.ansible.com/ansible-
+core/2.13/reference_appendices/interpreter_discovery.html for more information.
+changed: [192.168.1.154]
+
+TASK [debug] *******************************************************************
+ok: [192.168.1.154] => {
+    "msg": "Coreelec version = 9.2"
+}
+
+TASK [ssh_keys : Set up authorized_keys for the user root] *********************
+changed: [192.168.1.154] => (item=ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGxu5gcdzEcUpFy3T/iR746SkKBGy5CYvtZ3KQyzsfPg patrick@macos)
+changed: [192.168.1.154] => (item=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZlIzm+COhIyko/+yAaw95FnqYyzEXp/fnudkDOjb2B+lqZ2wylBHyMLQrZ+iryXg3/Pm2vdadJwLpa3LKVcNu9rHUY8qRQoYrfgvO8j/madvEKH1odPe4gIaIRUudYw27bielEEGBfSQkn54ByjLV7JIcIkeMG+iaKOPpAIReZJs00s9e+mgbILzYHfdqG/YM1KeQGN6y8Y3ykPMnM5KU1SpvC9QNBi76omspb7gt4WudKOYuhJFyjCPnEh351h+75nMhXNKJsSairN7ZoR7NVNHKilM4+ufbrBAYgON62BGoJXpQPHsSE0/R6jPXtMTXcy36JUpbTh5GAFCQ4RYt ikarataev@karvet-ubtn)
+changed: [192.168.1.154] => (item=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDHJh/Xb8SEelzIzWJDh2F7asFJ5Cwb4tWu5m1oYk3Q0YHmF8fcIVBEuP9RKc9fhkZhrXUNX7T7a6lHtOOaGiPqy0IEM/LzHPWqGYrN4JT1ccsT2vvxkHyfsjQpWpGPMl8cdcTp7oX1Jo4Hqc+C4cLxncmhKmli40aPQveZI7EGbT8VrwQ7HNlx3Vlo3Lh+tH5lQr6vI5z5aPxV0QecPKDZMnj20cbPiEmA0cjM6HEJ0h+G6Y1j59h65VR/BlsM4r5FAWFG4vYUX7zXs0da6l1/fe0umujmKi/ilphhH5LxLehcO8pG/AwMdiAQEPq2uhIslZLfzyCm1T7R6db5GY0/j405qYliuPc38EUuUroiY3u1N8bp7J0St0zlGcZPRybePEjPdppKwXgtGDZ8PvH+tJpOgMvD5RNuMviF++hv38vpVgdb5wgbyaSdgAbJh0W0GZR0ZFPeoAyxwCHCq4oIglxAtLhqUhBTgj8D449DVVITqeb/DdlTvRjDq+N09w8= hp-pc21@DESKTOP-T65P3H5)
+
+TASK [ssh_keys : Disable ssh password authorized] ******************************
+changed: [192.168.1.154]
+
+TASK [ssh_keys : restart sshd.service] *****************************************
+skipping: [192.168.1.154]
+
+TASK [ssh_keys : Wait for ssh to come up] **************************************
+skipping: [192.168.1.154]
+
+TASK [openvpn : Populate service facts] ****************************************
+ok: [192.168.1.154]
+
+TASK [openvpn : debug] *********************************************************
+skipping: [192.168.1.154]
+
+TASK [openvpn : Copy openvpn-pritunl.service file] *****************************
+changed: [192.168.1.154] => (item=openvpn-pritunl.service)
+
+TASK [openvpn : Print hostname variable] ***************************************
+ok: [192.168.1.154] => {
+    "msg": "Box Hostname = ritz-sg-club2.musicinxite.com"
+}
+
+TASK [openvpn : Copy openvpn key to host] **************************************
+changed: [192.168.1.154]
+
+TASK [openvpn : Extract remote key archive to box] *****************************
+changed: [192.168.1.154]
+
+TASK [openvpn : Move openvpn key file to ./config path] ************************
+changed: [192.168.1.154]
+
+TASK [openvpn : systemd reload] ************************************************
+ok: [192.168.1.154]
+
+TASK [openvpn : Start openvpn-printul service and enable it] *******************
+changed: [192.168.1.154]
+
+TASK [openvpn : remove key archive from box] ***********************************
+changed: [192.168.1.154]
+
+TASK [Check that system load from sdcard] **************************************
+changed: [192.168.1.154]
+
+TASK [debug] *******************************************************************
+ok: [192.168.1.154] => {
+    "msg": "Main storage /dev/sda1"
+}
+
+TASK [Move coreelec OS to internal memory if it's sdcard] **********************
+skipping: [192.168.1.154]
+
+TASK [Reboot a slow machine that might have lots of updates to apply] **********
+skipping: [192.168.1.154]
+
+TASK [Get os name] *************************************************************
+changed: [192.168.1.154]
+
+TASK [Print a message] *********************************************************
+ok: [192.168.1.154] => {
+    "msg": "System name coreelec"
+}
+
+TASK [Add hostname to config] **************************************************
+changed: [192.168.1.154]
+
+TASK [ntpserver : Change kodi timezone for new version] ************************
+changed: [192.168.1.154]
+
+TASK [libs : Copy libs archive file] *******************************************
+changed: [192.168.1.154] => (item=script.module.dateutil-2.8.1.zip)
+changed: [192.168.1.154] => (item=script.module.six-1.15.0.zip)
+
+TASK [libs : Extract libs plugins] *********************************************
+changed: [192.168.1.154]
+
+TASK [libs : Update local addons,install new libs, restart kodi] ***************
+changed: [192.168.1.154]
+
+TASK [cronxbmc : Copy autoexec.py file if Coreelec version == 9.2] *************
+changed: [192.168.1.154]
+
+TASK [cronxbmc : If version not legacy 9.2 create autoexec service] ************
+skipping: [192.168.1.154]
+
+TASK [cronxbmc : If version not legacy 9.2 copy autoexec addon service] ********
+skipping: [192.168.1.154]
+
+TASK [cronxbmc : Copy autoexec.py file to addon] *******************************
+skipping: [192.168.1.154]
+
+TASK [cronxbmc : Copy cronxbmc archive file] ***********************************
+changed: [192.168.1.154] => (item=cronxbmc-0.1.4.zip)
+
+TASK [cronxbmc : Extract cronxbmc plugin] **************************************
+changed: [192.168.1.154]
+
+TASK [cronxbmc : create directory with parent directories] *********************
+changed: [192.168.1.154]
+
+TASK [cronxbmc : Copy cron.xml file] *******************************************
+changed: [192.168.1.154] => (item=cron.xml)
+
+TASK [cronxbmc : Update local addons, restart kodi] ****************************
+changed: [192.168.1.154]
+
+TASK [cronxbmc : Enable cronxbmc plugin for new version Coreelec] **************
+skipping: [192.168.1.154]
+
+TASK [cronxbmc : Enable autoexec plugin for new version Coreelec] **************
+skipping: [192.168.1.154]
+
+TASK [cronxbmc : Enable plugin cronxmbc for legacy Coreelec] *******************
+changed: [192.168.1.154]
+
+TASK [iptables : Open full access for old VPN] *********************************
+changed: [192.168.1.154]
+
+TASK [iptables : Open full access for pritunl VPN] *****************************
+changed: [192.168.1.154]
+
+TASK [iptables : Disable port 8080 for interface eth0] *************************
+changed: [192.168.1.154]
+
+TASK [iptables : Disable port 8080 for interface wlan0] ************************
+changed: [192.168.1.154]
+
+TASK [iptables : Disable 111 port for interface eth0] **************************
+changed: [192.168.1.154]
+
+TASK [iptables : Disable 111 port for interface wlan0] *************************
+changed: [192.168.1.154]
+
+TASK [iptables : Disable 139 port for interface eth0] **************************
+changed: [192.168.1.154]
+
+TASK [iptables : Disable 139 port for interface wlan0] *************************
+changed: [192.168.1.154]
+
+TASK [iptables : Disable 445 port for interface eth0] **************************
+changed: [192.168.1.154]
+
+TASK [iptables : Disable 445 port for interface wlan0] *************************
+changed: [192.168.1.154]
+
+TASK [iptables : Save iptables rules] ******************************************
+changed: [192.168.1.154]
+
+TASK [iptables : Save iptables rules] ******************************************
+changed: [192.168.1.154]
+
+TASK [iptables : Enable iptables] **********************************************
+changed: [192.168.1.154]
+
+TASK [Disable samba service] ***************************************************
+changed: [192.168.1.154]
+
+TASK [Restart kodi.service with new hostname] **********************************
+changed: [192.168.1.154]
+
+PLAY RECAP *********************************************************************
+192.168.1.154              : ok=47   changed=40   unreachable=0    failed=0    skipped=11   rescued=0    ignored=0   
+localhost                  : ok=1    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+patrickoliver@Patricks-MacBook-Air-M2 Music-Inxite-Ansible-playbooks % 

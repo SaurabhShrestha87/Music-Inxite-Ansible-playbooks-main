@@ -1,0 +1,248 @@
+
+2-Early_Day_&_Evening
+2-Early_Day_\&_Evening/
+
+0 1 * * * /usr/bin/kodi-send --action="PlayMedia(/storage/music/2-Early_Day_&_Evening, isdir)"
+40 12 * * * /usr/bin/kodi-send --action="PlayMedia(/storage/music/1-Daytime, isdir)"
+0 17 * * * /usr/bin/kodi-send --action="PlayMedia(/storage/music/2-Early_Day_&_Evening, isdir)"
+45 18 * * * /usr/bin/kodi-send --action="PlayMedia(/storage/music/3-Main_Evening, isdir)"
+
+It is not working as expected due to the presence of the "&" character in the directory name. The "&" character has a special meaning in Linux, and it may cause the command to be interpreted differently by the shell.
+
+To avoid this issue, you can either use a backslash to escape the "&" character in the directory name, like this:
+
+PlayMedia(/storage/music/2-Early_Day_\&_Evening, isdir) instead of
+PlayMedia(/storage/music/2-Early_Day_&_Evening, isdir)
+Or you can enclose the directory name in quotes, like this:
+
+PlayMedia('/storage/music/2-Early_Day_&_Evening', isdir)
+By using either of these methods, it will work fine.
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Issue 1(..21) :
+Box: Jaan 172.31.145.21
+Issue summary. Music just stopped playing for now reason. I'd like to know why this has happened and what's causing it. Web GUI here: http://172.31.145.21:8080/
+User: kodi
+PW: kodi
+I restarted the box so now music is playing.
+                ********************************************************************************************
+*********************~~  startup file : /storage/.kodi/addons/service.autoexec
+*********************~~  cron file : /storage/.cache/cron/crontabs/ root
+*********************~~  log file : cd /storage/.kodi/temp/
+*********************~~  music file : cd music/
+*********************~~  Error : GetItemsForPlayList:
+*********************~~  cron status : systemctl status cron
+                ********************************************************************************************
+
+: 28_apr_23 :
+-   Trying Using PlayMedia('/storage/music/2-Early_Day_&_Evening', isdir) for
+    at cron file
+
+: 1_may_23 :
+-   Using PlayMedia('/storage/music/2-Early_Day_&_Evening', isdir) for
+    at cron file
+-   the attribute name="2-Early_Day_&_Evening" contains an ampersand symbol & which is a reserved character in XML and needs to be escaped.
+    Therefore, it is recommended to escape the ampersand symbol in the attribute value by replacing it with &amp; as follows:
+    name="2-Early_Day_&amp;_Evening"
+-   rename the folder 2-Early_Day_&_Evening
+    to something without &. Like 2-Early_Day_and_Evening
+    Also, changed the  cron file to 2-Early_Day_and_Evening 
+-   Waiting for playlist switch to debug
+-   Didn't work
+-   Had to change the way we fetch playlist from folder to a playlist file at cron file
+    FROM :
+    38 13 * * * /usr/bin/kodi-send --action="PlayMedia(/storage/music/2-Early_Day_and_Evening, isdir)"
+    40 12 * * * /usr/bin/kodi-send --action="PlayMedia(/storage/music/1-Daytime, isdir)"
+    0 17 * * * /usr/bin/kodi-send --action="PlayMedia(/storage/music/2-Early_Day_and_Evening, isdir)"
+    45 18 * * * /usr/bin/kodi-send --action="PlayMedia(/storage/music/3-Main_Evening, isdir)"
+    TO :
+
+25 11 * * * rm -f /storage/music/my_playlist.m3u && touch /storage/music/my_playlist.m3u && find /storage/music/2-Early_Day_and_Evening/ -name "*.mp3" >> /storage/music/my_playlist.m3u && /usr/bin/kodi-send --action="PlayMedia(/storage/music/my_playlist.m3u, isdir)"
+40 12 * * * rm -f /storage/music/my_playlist.m3u && touch /storage/music/my_playlist.m3u && find /storage/music/1-Daytime/ -name "*.mp3" >> /storage/music/my_playlist.m3u && /usr/bin/kodi-send --action="PlayMedia(/storage/music/my_playlist.m3u, isdir)"
+0 17 * * * rm -f /storage/music/my_playlist.m3u && touch /storage/music/my_playlist.m3u && find /storage/music/2-Early_Day_and_Evening/ -name "*.mp3" >> /storage/music/my_playlist.m3u && /usr/bin/kodi-send --action="PlayMedia(/storage/music/my_playlist.m3u, isdir)"
+45 18 * * * rm -f /storage/music/my_playlist.m3u && touch /storage/music/my_playlist.m3u && find /storage/music/3-Main_Evening/ -name "*.mp3" >> /storage/music/my_playlist.m3u && /usr/bin/kodi-send --action="PlayMedia(/storage/music/1-Daytime, isdir)"
+
+25 11
+40 12
+0 17
+45 18
+
+-   Autoplay at reboot stopped working because of 2-Early_Day_&_Evening was there instead of 2-Early_Day_and_Evening.
+-   Changed it, testing with reboot
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Issue 2(..102) :
+I have a different box that isn't working the way it should. Wanted to know if you could help with that today.
+Box: 172.31.145.102 (Jaan2)
+Issue that the cron schedule isn't working. It's not changing folders of music like it should.
+Cron file path: sftp://root@172.31.145.102/storage/.kodi/userdata/addon_data/service.cronxbmc
+May the Kodi logs can suggest the problem.
+
+                ********************************************************************************************
+*********************~~  startup file :  /storage/.kodi/addons/service.autoexec
+*********************~~  (ARM) startup file :  /storage/.kodi/userdata/autoexec.py
+*********************~~  cron file : .kodi/userdata/addon_data/service.cronxbmc/cron.xml
+*********************~~  cron file : /storage/.cache/cron/crontabs/ root
+*********************~~  log file : cd /storage/.kodi/temp/
+*********************~~  music file : cd music/
+*********************~~  cron status : systemctl status cron
+                ********************************************************************************************
+                rm cronxbmc-0.1.4.zip
+                wget https://tunnel.musicinxite.com/cronupdate/cronxbmc-0.1.4.zip
+                unzip -o cronxbmc-0.1.4.zip -d /storage/.kodi/addons/
+                rm cronxbmc-0.1.4.zip
+                systemctl restart kodi.service
+                #shutdown -r now
+                #
+
+
+: 28_apr_23 :
+-   Trying Using PlayMedia('/storage/music/2-Early_Day_&_Evening', isdir) for
+    at cron file
+: 1_may_23 :
+-   rename the folder 2-Early_Day_&_Evening
+    to something without &. Like 2-Early_Day_and_Evening
+    Also, changed the  cron file to 2-Early_Day_and_Evening
+-   Waiting for playlist switch to debug
+-   Autoplay at reboot stopped working because of 2-Early_Day_&_Evening was there instead of 2-Early_Day_and_Evening. and 2-Daytime instead of 1-Daytime
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Issue 3 (..101): 172.31.145.101 (Cure Butcher) Boy
+Can you help me check the Cron file on this legacy OS box?
+sftp://root@172.31.145.101/storage/.kodi/userdata/addon_data/service.cronxbmc/cron.xml
+There might be an error in text of the file. 19:00 SG time, it was supposed to change to folder: 3-Main_Evening and it didn't, so I did it manually using the Kodi Web GUI
+
+***********************
+: 1_may_23 :
+-   connect to host 172.31.145.101 port 22: Connection timed out
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+*********************** PlayMedia(media[,isdir])
+
+kodi-send --action="PlayMedia('/storage/music/1-Daytime', isdir)"
+kodi-send --action="PlayMedia(/storage/music/1-Daytime/, isdir)"
+kodi-send --action="PlayMedia(/storage/music/4-Test, isdir)"
+
+// WORKING
+kodi-send --action="PlayMedia(/storage/music/1-Daytime/Move Me_PN.mp3)"
+kodi-send --action="PlayMedia(/storage/music/1-Daytime/Shasta_PN.mp3)"
+kodi-send --action="PlayMedia(/storage/music/1-Daytime/George Kelly - Last Forever_PN.mp3)"
+
+//COPY
+cp /storage/music/1-Daytime/Move\ Me_PN.mp3 /storage/music/4-Test/
+cp /storage/music/1-Daytime/Shasta_PN.mp3 /storage/music/4-Test/
+
+making a playlist and inserting all mp3 files in it
+20 15 * * * if [ ! -f /storage/music/my_playlist.m3u ]; then touch /storage/music/my_playlist.m3u; fi && find /storage/music/musics -name "*.mp3" > /storage/music/my_playlist.m3u && /usr/bin/kodi-send --action="PlayMedia(/storage/music/4-Test/my_playlist.m3u, isdir)"
+***********************
+20 15 * * * /usr/bin/kodi-send --action="PlayMedia(/storage/music/2-Early_Day_and_Evening, isdir)"
+40 12 * * * /usr/bin/kodi-send --action="PlayMedia(/storage/music/1-Daytime, isdir)"
+0 17 * * * /usr/bin/kodi-send --action="PlayMedia(/storage/music/2-Early_Day_and_Evening, isdir)"
+45 18 * * * /usr/bin/kodi-send --action="PlayMedia(/storage/music/3-Main_Evening, isdir)"
+
+20 15 * * * if [ ! -f /storage/music/2-Early_Day_and_Evening/my_playlist.m3u ]; then touch /storage/music/2-Early_Day_and_Evening/my_playlist.m3u; fi && find /storage/music/2-Early_Day_and_Evening/ -name "*.mp3" >> /storage/music/2-Early_Day_and_Evening/my_playlist.m3u && /usr/bin/kodi-send --action="PlayMedia(/storage/music/2-Early_Day_and_Evening/my_playlist.m3u)"
+40 12 * * * if [ ! -f /storage/music/1-Daytime/my_playlist.m3u ]; then touch /storage/music/1-Daytime/my_playlist.m3u; fi && find /storage/music/1-Daytime/ -name "*.mp3" >> /storage/music/1-Daytime/my_playlist.m3u && /usr/bin/kodi-send --action="PlayMedia(/storage/music/1-Daytime/my_playlist.m3u)"
+0 17 * * * if [ ! -f /storage/music/2-Early_Day_and_Evening/my_playlist.m3u ]; then touch /storage/music/2-Early_Day_and_Evening/my_playlist.m3u; fi && find /storage/music/2-Early_Day_and_Evening/ -name "*.mp3" >> /storage/music/2-Early_Day_and_Evening/my_playlist.m3u && /usr/bin/kodi-send --action="PlayMedia(/storage/music/2-Early_Day_and_Evening/my_playlist.m3u)"
+45 18 * * * if [ ! -f /storage/music/3-Main_Evening/my_playlist.m3u ]; then touch /storage/music/3-Main_Evening/my_playlist.m3u; fi && find /storage/music/3-Main_Evening/ -name "*.mp3" >> /storage/music/3-Main_Evening/my_playlist.m3u && /usr/bin/kodi-send --action="PlayMedia(/storage/music/3-Main_Evening/my_playlist.m3u)"
+
+***********************
+
+ISSUE 2
+FROM
+<?xml version="1.0" ?>
+<cron>
+    <job addon="service.cronxbmc" command="PlayMedia(/storage/music/4-Test/Shasta_PN.mp3)" expression="40 15 * * *" name="4-Test" show_notification="true" />
+    <job addon="service.cronxbmc" command="PlayMedia(/storage/music/4-Test/337 - Durand Jones /& The Indications - The Way That I Do_PN.mp3)" expression="41 15 * * *" name="2-Early_Day_and_Evening" show_notification="false" />
+    <job addon="service.cronxbmc" command="PlayMedia(/storage/music/1-Daytime, isdir)" expression="24 15 * * *" name="1-Daytime" show_notification="false" />
+    <job addon="service.cronxbmc" command="PlayMedia(/storage/music/2-Early_Day_and_Evening, isdir)" expression="25 15 * * *" name="2-Early_Day_and_Evening" show_notification="false" />
+    <job addon="service.cronxbmc" command="PlayMedia(/storage/music/3-Main_Evening, isdir)" expression="26 15 * * *" name="3-Main_Evening" show_notification="false" />
+</cron>
+
+<?xml version="1.0" ?>
+<cron>
+<job name="Shasta_PN" command_type="built-in" command="PlayMedia(/storage/music/4-Test/Shasta_PN.mp3)" expression="45 16 * * *" show_notification="false" id="1" run_if_skipped="false" last_run="0" />
+<job name="Shasta_PN" command_type="built-in" command="PlayMedia(/storage/music/1-Daytime, isdir)" expression="46 16 * * *" show_notification="false" id="1" run_if_skipped="false" last_run="0" />
+</cron>
+
+TO
+<?xml version="1.0" ?>
+<cron>
+    <job addon="service.cronxbmc" command="/storage/music/script.sh {2-Early_Day_and_Evening}" expression="45 12 * * *" name="2-Early_Day_and_Evening" show_notification="false" >
+      <param name="music_directory" value="/storage/music/2-Early_Day_and_Evening/" />
+    </job>
+    <job addon="service.cronxbmc" command="/storage/music/script.sh {1-Daytime}" expression="0 13 * * *" name="1-Daytime" show_notification="false" >
+      <param name="music_directory" value="/storage/music/1-Daytime/" />
+    </job>
+    <job addon="service.cronxbmc" command="/storage/music/script.sh {2-Early_Day_and_Evening}" expression="0 17 * * *" name="2-Early_Day_and_Evening" show_notification="false" >
+          <param name="music_directory" value="/storage/music/2-Early_Day_and_Evening/" />
+    </job>
+    <job addon="service.cronxbmc" command="/storage/music/script.sh {3-Main_Evening}" expression="45 18 * * *" name="3-Main_Evening" show_notification="false" >
+          <param name="music_directory" value="/storage/music/3-Main_Evening/" />
+    </job>
+</cron>
+
+Also ADDED A BASH SCRIPT
+#!/bin/bash
+
+MUSIC_DIR="$1"
+PLAYLIST_PATH="${MUSIC_DIR}my_playlist.m3u"
+
+if [ ! -f "$PLAYLIST_PATH" ]; then
+  touch "$PLAYLIST_PATH"
+  find "$MUSIC_DIR" -name "*.mp3" >> "$PLAYLIST_PATH"
+fi
+
+/usr/bin/kodi-send --action="PlayMedia($PLAYLIST_PATH, isdir)"
+
+date +"%H:%M"
+
+/storage/music/1-Daytime/Shasta_PN.mp3
+/storage/music/1-Daytime/337 - Durand Jones & The Indications - The Way That I Do_PN.mp3
+
+/storage/music/4-Test
+
+<?xml version="1.0" ?>
+<cron>
+<job name="1-Daytime" command_type="built-in" command="PlayMedia(/storage/music/1-Daytime, isdir)" expression="20 17 * * *" show_notification="false" id="2" run_if_skipped="false" last_run="0"
+ />
+<job name="1-Daytime" command_type="built-in" command="PlayMedia(/storage/music/1-Daytime, isdir)" expression="00 9 * * *" show_notification="false" id="2" run_if_skipped="false" last_run="0"
+ />
+<job name="1-Daytime" command_type="built-in" command="PlayMedia(/storage/music/1-Daytime, isdir)" expression="0 13 * * *" show_notification="false" id="2" run_if_skipped="false" last_run="0"
+ />
+<job name="1-Daytime" command_type="built-in" command="PlayMedia(/storage/music/2-Early_Day_and_Evening, isdir)" expression="0 17 * * *" show_notification="false" id="2" run_if_skipped="false" last_run="0"
+ />
+<job name="3-Main_Evening_2" command_type="built-in" command="PlayMedia(/storage/music/3-Main_Evening, isdir)" expression="45 18 * * *" show_notification="false" id="2" run_if_skipped="false" last_run="0"
+ />
+</cron>
+
+
+<?xml version="1.0" ?>
+<cron>
+    <job addon="service.cronxbmc" command="PlayMedia(/storage/music/4-Test/Shasta_PN)" expression="22 15 * * *" name="4-Test" show_notification="true" />
+    <job addon="service.cronxbmc" command="PlayMedia(/storage/music/2-Early_Day_and_Evening, isdir)" expression="00 9 * * *" name="2-Early_Day_and_Evening" show_notification="false" />
+    <job addon="service.cronxbmc" command="PlayMedia(/storage/music/1-Daytime, isdir)" expression="0 13 * * *" name="1-Daytime" show_notification="false" />
+    <job addon="service.cronxbmc" command="PlayMedia(/storage/music/2-Early_Day_and_Evening, isdir)" expression="0 17 * * *" name="2-Early_Day_and_Evening" show_notification="false" />
+    <job addon="service.cronxbmc" command="PlayMedia(/storage/music/3-Main_Evening, isdir)" expression="45 18 * * *" name="3-Main_Evening" show_notification="false" />
+</cron>
+
+<?xml version="1.0" ?>
+<cron>
+  <job addon="service.cronxbmc" command="PlayMedia(/storage/music/4-Test, isdir)" expression="40 18 * * *" name="4-Test" show_notification="false" />
+  <job addon="service.cronxbmc" command="PlayMedia(/storage/music/2-Early_Day_and_Evening, isdir)" expression="0 5 * * *" name="2-Early_Day_and_Evening_1" show_notification="false" />
+  <job addon="service.cronxbmc" command="PlayMedia(/storage/music/1-Daytime, isdir)" expression="0 16 * * *" name="1-Daytime" show_notification="false" />
+  <job addon="service.cronxbmc" command="PlayMedia(/storage/music/2-Early_Day_and_Evening, isdir)" expression="0 19 * * *" name="2-Early_Day_and_Evening_2" show_notification="false" />
+</cron>
+
+25 11
+40 12
+0 17
+45 18
+
+10 13
+11 13
+12 13
+13 13
+
+ssh root@172.31.142.15

@@ -1,0 +1,3 @@
+0 1 * * * /usr/bin/bash /storage/play_script.sh "/storage/music/1-Daytime/"
+0 17 * * * /usr/bin/bash /storage/play_script.sh "/storage/music/2-Early_Evening"
+15 19 * * * /usr/bin/bash /storage/play_script.sh "/storage/music/3-Main_Evening"

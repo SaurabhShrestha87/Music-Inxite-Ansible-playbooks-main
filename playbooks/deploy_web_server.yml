@@ -1,0 +1,11 @@
+---
+# - hosts: digital-ocean-servers:boxes
+- name: Including ssh-keys role 
+  hosts: test_box
+  vars:
+        http_password: "music5673"
+        http_user: "kodi"
+        box_timezone: "Singapore"
+  # hosts: digital-ocean-servers:boxes
+  roles: 
+    - role: webserver

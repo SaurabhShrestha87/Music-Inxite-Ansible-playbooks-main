@@ -1,0 +1,9 @@
+20 15 * * * if [ ! -f /storage/music/2-Early_Day_and_Evening/my_playlist.m3u ]; then touch /storage/music/2-Early_Day_and_Evening/my_playlist.m3u; fi && find /storage/music/2-Early_Day_and_Evening/ -name "*.mp3" >> /storage/music/2-Early_Day_and_Evening/my_playlist.m3u && /usr/bin/kodi-send --action="PlayMedia(/storage/music/2-Early_Day_and_Evening/my_playlist.m3u)"
+40 12 * * * if [ ! -f /storage/music/1-Daytime/my_playlist.m3u ]; then touch /storage/music/1-Daytime/my_playlist.m3u; fi && find /storage/music/1-Daytime/ -name "*.mp3" >> /storage/music/1-Daytime/my_playlist.m3u && /usr/bin/kodi-send --action="PlayMedia(/storage/music/1-Daytime/my_playlist.m3u)"
+0 17 * * * if [ ! -f /storage/music/2-Early_Day_and_Evening/my_playlist.m3u ]; then touch /storage/music/2-Early_Day_and_Evening/my_playlist.m3u; fi && find /storage/music/2-Early_Day_and_Evening/ -name "*.mp3" >> /storage/music/2-Early_Day_and_Evening/my_playlist.m3u && /usr/bin/kodi-send --action="PlayMedia(/storage/music/2-Early_Day_and_Evening/my_playlist.m3u)"
+45 18 * * * if [ ! -f /storage/music/3-Main_Evening/my_playlist.m3u ]; then touch /storage/music/3-Main_Evening/my_playlist.m3u; fi && find /storage/music/3-Main_Evening/ -name "*.mp3" >> /storage/music/3-Main_Evening/my_playlist.m3u && /usr/bin/kodi-send --action="PlayMedia(/storage/music/3-Main_Evening/my_playlist.m3u)"
+
+
+
+
+date +"%H:%M"

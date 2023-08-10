@@ -1,0 +1,49 @@
+    - name: stop kodi service
+      shell: systemctl stop kodi.service
+
+    - name: Enable webserver,change config.
+      lineinfile:
+        path: /storage/.kodi/userdata/guisettings.xml
+        regexp: '<setting id="services.webserver".*'
+        line: '<setting id="services.webserver" default="true">true</setting>'
+
+    - name: Enable webserver auth,changin config.
+      lineinfile:
+        path: /storage/.kodi/userdata/guisettings.xml
+        regexp: '<setting id="services.webserverauthentication">.*'
+        line: '<setting id="services.webserverauthentication">true</setting>'
+
+    - name: Webserver change auth password.
+      lineinfile:
+        path: /storage/.kodi/userdata/guisettings.xml
+        regexp: '<setting id="services.webserverpassword.*'
+        line: '<setting id="services.webserverpassword">{{http_password}}</setting>'
+
+    - name: Webserver change auth username.
+      lineinfile:
+        path: /storage/.kodi/userdata/guisettings.xml
+        regexp: '<setting id="services.webserverusername".*'
+        line: '<setting id="services.webserverusername" default="true">kodi</setting>'
+
+    - name: Copy advancedsettings archive file
+      copy:
+        src: '{{ item }}'
+        dest: '/storage/.kodi/userdata/{{ item }}'
+        force: no
+      loop:
+      - "advancedsettings.xml"
+
+    - name: start kodi service
+      shell: systemctl start kodi.service
+
+    - name: Wait until HTTP webserver UP and status is 401
+      uri:
+        url: 'http://127.0.0.1:8080/'
+        return_content: yes
+        validate_certs: no
+        status_code:
+          - 401
+      until: uri_output.status == 401
+      retries: 10 # Retries for 24 * 5 seconds = 120 seconds = 2 minutes
+      delay: 5 # Every 5 seconds
+      register: uri_output

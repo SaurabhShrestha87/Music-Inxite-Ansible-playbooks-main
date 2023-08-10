@@ -1,0 +1,96 @@
+- name: Open full access for old VPN
+  ansible.builtin.iptables:
+    chain: INPUT
+    source: 172.31.142.0/24
+    jump: ACCEPT
+  become: true
+
+- name: Open full access for pritunl VPN
+  ansible.builtin.iptables:
+    chain: INPUT
+    source: 172.31.145.0/24
+    jump: ACCEPT
+  become: true
+
+- name: Disable port 8080 for interface eth0
+  ansible.builtin.iptables:
+    chain: INPUT
+    in_interface: eth0
+    protocol: tcp
+    destination_port: 8080
+    jump: DROP
+    # comment: "Disable 8080 port for local network"
+  become: true
+
+- name: Disable port 8080 for interface wlan0
+  ansible.builtin.iptables:
+    chain: INPUT
+    in_interface: wlan0
+    protocol: tcp
+    destination_port: 8080
+    jump: DROP
+    # comment: "Disable 8080 port for local network"
+  become: true
+
+- name: Disable 111 port for interface eth0
+  ansible.builtin.iptables:
+    chain: INPUT
+    in_interface: eth0
+    protocol: tcp
+    destination_port: 111
+    jump: DROP
+  become: true
+
+- name: Disable 111 port for interface wlan0
+  ansible.builtin.iptables:
+    chain: INPUT
+    in_interface: wlan0
+    protocol: tcp
+    destination_port: 111
+    jump: DROP
+  become: true
+
+- name: Disable 139 port for interface eth0
+  ansible.builtin.iptables:
+    chain: INPUT
+    in_interface: eth0
+    protocol: tcp
+    destination_port: 139
+    jump: DROP
+  become: true
+
+- name: Disable 139 port for interface wlan0
+  ansible.builtin.iptables:
+    chain: INPUT
+    in_interface: wlan0
+    protocol: tcp
+    destination_port: 139
+    jump: DROP
+  become: true
+
+- name: Disable 445 port for interface eth0
+  ansible.builtin.iptables:
+    chain: INPUT
+    in_interface: eth0
+    protocol: tcp
+    destination_port: 445
+    jump: DROP
+  become: true
+
+- name: Disable 445 port for interface wlan0
+  ansible.builtin.iptables:
+    chain: INPUT
+    in_interface: wlan0
+    protocol: tcp
+    destination_port: 445
+    jump: DROP
+  become: true
+
+- name: Save iptables rules
+  shell: "iptables-save >/storage/.config/iptables/rules.v4"
+
+- name: Save iptables rules
+  shell: "echo 'iptables-restore </storage/.config/iptables/rules.v4' > /storage/.config/autostart.sh"
+
+- name: Enable iptables
+  shell: "systemctl unmask iptables"

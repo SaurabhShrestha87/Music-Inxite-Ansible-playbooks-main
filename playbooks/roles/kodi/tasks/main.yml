@@ -1,0 +1,10 @@
+        - name: Update package cache
+          become: yes
+          apt:
+            update_cache: yes
+
+        - name: Install Kodi
+          become: yes
+          package:
+            name: kodi
+            state: present

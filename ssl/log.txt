@@ -1,0 +1,53 @@
+[Thu 13 Jul 2023 08:41:52 AM UTC] Renew: 'msapp.musicinxite.com'
+[Thu 13 Jul 2023 08:41:52 AM UTC] Renew to Le_API=https://acme-v02.api.letsencrypt.org/directory
+[Thu 13 Jul 2023 08:41:52 AM UTC] Using CA: https://acme-v02.api.letsencrypt.org/directory
+[Thu 13 Jul 2023 08:41:52 AM UTC] Single domain='msapp.musicinxite.com'
+[Thu 13 Jul 2023 08:41:52 AM UTC] Getting domain auth token for each domain
+[Thu 13 Jul 2023 08:41:55 AM UTC] Getting webroot for domain='msapp.musicinxite.com'
+[Thu 13 Jul 2023 08:41:55 AM UTC] Verifying: msapp.musicinxite.com
+[Thu 13 Jul 2023 08:41:55 AM UTC] Stateless mode for domain:msapp.musicinxite.com
+[Thu 13 Jul 2023 08:41:58 AM UTC] Pending, The CA is processing your order, please just wait. (1/30)
+[Thu 13 Jul 2023 08:42:01 AM UTC] Success
+[Thu 13 Jul 2023 08:42:01 AM UTC] Verify finished, start to sign.
+[Thu 13 Jul 2023 08:42:01 AM UTC] Lets finalize the order.
+[Thu 13 Jul 2023 08:42:01 AM UTC] Le_OrderFinalize='https://acme-v02.api.letsencrypt.org/acme/finalize/113812098/194632574537'
+[Thu 13 Jul 2023 08:42:03 AM UTC] Downloading cert.
+[Thu 13 Jul 2023 08:42:03 AM UTC] Le_LinkCert='https://acme-v02.api.letsencrypt.org/acme/cert/049732f0380887c5e6eb3b5d3bf6758c94fa'
+[Thu 13 Jul 2023 08:42:04 AM UTC] Cert success.
+-----BEGIN CERTIFICATE-----
+MIIEXDCCA0SgAwIBAgISBJcy8DgIh8Xm6ztdO/Z1jJT6MA0GCSqGSIb3DQEBCwUA
+MDIxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MQswCQYDVQQD
+EwJSMzAeFw0yMzA3MTMwNzQyMDJaFw0yMzEwMTEwNzQyMDFaMCAxHjAcBgNVBAMT
+FW1zYXBwLm11c2ljaW54aXRlLmNvbTB2MBAGByqGSM49AgEGBSuBBAAiA2IABASG
+gkuc/AqeHbIJCeYWyyxz+zUVr8g/q3NIIzcgy2B/yaaK/g13YahNoMZLQy01mh8s
+AhGonw+AkrRzKwnL6hgxxQRZ/1wZk2i1LxkKyWvXWSW6fGyQrVvY1qPX/wNcAqOC
+AiowggImMA4GA1UdDwEB/wQEAwIHgDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYB
+BQUHAwIwDAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQU+Fk2Z5oCHGAOvwKnwfwAnvOf
+MzUwHwYDVR0jBBgwFoAUFC6zF7dYVsuuUAlA5h+vnYsUwsYwVQYIKwYBBQUHAQEE
+STBHMCEGCCsGAQUFBzABhhVodHRwOi8vcjMuby5sZW5jci5vcmcwIgYIKwYBBQUH
+MAKGFmh0dHA6Ly9yMy5pLmxlbmNyLm9yZy8wIAYDVR0RBBkwF4IVbXNhcHAubXVz
+aWNpbnhpdGUuY29tMBMGA1UdIAQMMAowCAYGZ4EMAQIBMIIBBAYKKwYBBAHWeQIE
+AgSB9QSB8gDwAHcAejKMVNi3LbYg6jjgUh7phBZwMhOFTTvSK8E6V6NS61IAAAGJ
+TmoWtAAABAMASDBGAiEAxFAHNV+H1LDzhlsnpN177MvI+iYXNGPrFdKos+wXFJQC
+IQCNSGlcLj/g+mb+ftKfXMP5RIUGXSlngUauvbJR1wTiMgB1AOg+0No+9QY1MudX
+KLyJa8kD08vREWvs62nhd31tBr1uAAABiU5qFrEAAAQDAEYwRAIgUSVXFMskInhL
+R6HrDFlJPgh6BKCuD3g+IYsOFgbLoL4CIAjDCUomJrA2UbOReLnYb4e8xNdIm8kU
+v55OZEnXLFh9MBEGCCsGAQUFBwEYBAUwAwIBBTANBgkqhkiG9w0BAQsFAAOCAQEA
+LimR3fn/OqF/GZdb3j/YPkn4lghjceb33iq7y0kdLpgaFM9nZO6uzjrlZJaKrYVB
+5rY4fpXgXMPl1M5DyFXZOaMmJmSNPJCnmsGXClTr9icRdsq23G2br3ayL1oXdkFO
+8+NzkzEvEHKebJC6WTUIi/X48rOugUmpagLHKrWAYbVbKbPtPqp0chnGThFR7/6g
+4B8cE2WRt6WoKlmZNbXocE66JZoGVyIFbiHpJnVvU3smj3oBhSeyiDt6SSeqJrEi
+vDgsvVY9LZKcAGp3SN/YreLAizvnxkZWZhWtIkAmwb+cRMLNZO0YfDcb2t4ZdnLG
+2tNtousUkP6HWag8fqilOw==
+-----END CERTIFICATE-----
+[Thu 13 Jul 2023 08:42:04 AM UTC] Your cert is in: /root/.acme.sh/msapp.musicinxite.com_ecc/msapp.musicinxite.com.cer
+[Thu 13 Jul 2023 08:42:04 AM UTC] Your cert key is in: /root/.acme.sh/msapp.musicinxite.com_ecc/msapp.musicinxite.com.key
+[Thu 13 Jul 2023 08:42:04 AM UTC] The intermediate CA cert is in: /root/.acme.sh/msapp.musicinxite.com_ecc/ca.cer
+[Thu 13 Jul 2023 08:42:04 AM UTC] And the full chain certs is there: /root/.acme.sh/msapp.musicinxite.com_ecc/fullchain.cer
+
+
+
+[Thu 13 Jul 2023 08:42:04 AM UTC] Your cert is in: /root/.acme.sh/msapp.musicinxite.com_ecc/msapp.musicinxite.com.cer
+[Thu 13 Jul 2023 08:42:04 AM UTC] Your cert key is in: /root/.acme.sh/msapp.musicinxite.com_ecc/msapp.musicinxite.com.key
+[Thu 13 Jul 2023 08:42:04 AM UTC] The intermediate CA cert is in: /root/.acme.sh/msapp.musicinxite.com_ecc/ca.cer
+[Thu 13 Jul 2023 08:42:04 AM UTC] And the full chain certs is there: /root/.acme.sh/msapp.musicinxite.com_ecc/fullchain.cer

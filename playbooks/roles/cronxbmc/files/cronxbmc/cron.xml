@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<cron>
+  <job addon="service.cronxbmc" command="PlayMedia(/storage/music/1-test, isdir)" expression="05 17 * * *" id="0" name="1-test" show_notification="false"/>  
+  <job addon="service.cronxbmc" command="PlayMedia(/storage/music/2-test, isdir)" expression="56 13 * * *" id="1" name="2-test" show_notification="false"/>   
+  <job addon="service.cronxbmc" command="PlayMedia(/storage/music/2-test, isdir)" expression="49 4 * * *" id="2" name="2-test1" show_notification="false"/>   
+</cron>

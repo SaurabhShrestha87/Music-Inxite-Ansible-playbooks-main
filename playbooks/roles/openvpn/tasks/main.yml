@@ -1,0 +1,40 @@
+    - name: Populate service facts
+      service_facts:
+    - debug:
+        msg: Openvpn already set up.
+      when: ansible_facts.services['openvpn-pritunl.service'] is defined and ansible_facts.services["openvpn-pritunl.service"].state == "running"
+
+    # - name: Stop for this host if service already work
+    #   meta: end_host
+    #   when: ansible_facts.services['openvpn-pritunl.service'] is defined and ansible_facts.services["openvpn-pritunl.service"].state == "running"
+
+    - name: Copy openvpn-pritunl.service file
+      copy:
+        src: 'files/{{ item }}'
+        dest: '/storage/.config/system.d/{{ item }}'
+        force: yes 
+      loop:
+      - openvpn-pritunl.service
+    - name: Print hostname variable
+      debug:
+        msg: Box Hostname = {{ hostname_box }}
+    - name: Copy openvpn key to host
+      copy: 
+        src: "files/keys/{{ hostname_box }}.tar"
+        dest: "/tmp/"
+        force: no 
+    - name: Extract remote key archive to box #because busy box
+      shell: "cd /tmp/;tar xvf {{ hostname_box }}.tar"
+      register: filename
+    - name: Move openvpn key file to ./config path
+      command: "mv -f /tmp/{{ filename.stdout }} /storage/.config/openvpn-pritunl.config"
+    - name: systemd reload
+      systemd:
+        daemon_reload: yes
+    - name: Start openvpn-printul service and enable it
+      ansible.builtin.service:
+        name: openvpn-pritunl.service
+        enabled: yes
+        state: started
+    - name: remove key archive from box
+      shell: "rm  /tmp/{{ hostname_box }}.tar"

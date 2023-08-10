@@ -1,0 +1,18 @@
+11 July 2023
+
+I have a box online that is not allowing me to pull up the kodi web interface. Can you check on this one for me:
+http://172.31.145.86:8080/
+
+http://172.31.142.64/
+
+FIX :
+1. Go to ~/.kodi/userdata/
+
+Edit the guisettings.xml file in the userdata folder and look for the following settings under "<services>", and make sure they are set to "true". You'll have to look for them a little bit, because there among several other settings. Assuming you have not set a password or changed other default settings, this should work:
+<esallinterfaces> - true
+<webserver> - true
+<zeroconf> - true
+Save the file and restart Kodi.
+
+admin password
+music5673

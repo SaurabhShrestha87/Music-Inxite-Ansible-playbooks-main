@@ -1,0 +1,129 @@
+- hosts: localhost
+  gather_facts: false
+  vars_prompt:
+    - name: target_host
+      prompt: please enter the target host IP
+      private: false
+      default: "192.168.100.50"
+  tasks:
+    - add_host:
+        name: "{{ target_host }}"
+        groups: dynamically_created_hosts
+- hosts: dynamically_created_hosts
+  gather_facts: false
+  vars_prompt:
+    - name: hostname
+      prompt: Please insert hostname for new box without domain?
+      private: false
+      default: "ilia-home-tanix-box"
+  vars:
+        ansible_ssh_user: root
+        install: "true"
+        ansible_ssh_pass: coreelec
+        hostname_box: "{{ hostname }}.musicinxite.com"
+        cronxbmc_addon_file: "cronxbmc-0.1.6.zip"
+        dateutil_addon_file: "script.module.dateutil-2.8.2.zip"
+        module_six_addon_file: "script.module.six-1.15.0.zip"
+        http_password: "music5673"
+        http_user: "kodi"
+        box_timezone: "Singapore"
+        ansible_ssh_common_args: '-o UserKnownHostsFile=/dev/null' #work well
+  tasks:
+    - name: Find out playbooks path
+      delegate_to: localhost
+      shell: pwd
+      register: inventory_dir
+    - name: Create variable for http managment
+      delegate_to: localhost
+      shell: echo -n '{{ http_user }}:{{ http_password }}'|base64
+      register: http_token
+
+    - name: Check openvpn keys in playbooks/roles/openvpn/fiels/keys
+      delegate_to: localhost
+      stat:
+        path: "{{ inventory_dir.stdout }}/roles/openvpn/files/keys/{{ hostname_box }}.tar"
+      register: openvpn_key
+    - name: 'Check parm is null or invalid'
+      fail: msg="Openvpn key file not found in {{ inventory_dir.stdout }}/roles/openvpn/files/keys/{{ hostname_box }}.tar, please download  key from https://tunnel.musicinxite.com/ , save and try again "
+      when: openvpn_key.stat.exists == False
+
+    - name: Check coreelec version
+      shell: cat /etc/os-release |grep VERSION_ID |cut -d "\"" -f2
+      register: coreelec_version
+    - debug:
+        msg: Coreelec version = {{ coreelec_version.stdout }}
+    - import_role:
+       name: ssh_keys
+#------------------Set up openvpn
+    - import_role:
+       name: openvpn
+
+      # MARK switch to nand /usr/sbin/fw_setenv bootfromnand 1 && \ doesn't work im 20 version
+    - name: Check that system load from sdcard
+      shell: |
+        df -h |grep /dev/CE_STORAGE | awk '{print $1}'
+      register: internal_storage
+    - debug: var=internal_storage.stdout
+
+    - name: Move coreelec OS to internal memory, to see params fw_printenv
+      shell: |
+          printf 'y\n1\ny\ny\ny\n'|ceemmc -x  && \ 
+          /usr/sbin/fw_setenv bootcmd 'if test ${bootfromnand} = 1; then setenv bootfromnand 0; saveenv; else run bootfromemmc;run bootfromsd; run bootfromusb; fi; run storeboot'
+      # ignore_errors: True
+      when: internal_storage.stdout != '/dev/CE_STORAGE' and coreelec_version == '19.5'
+
+    #сделать проверку на железо.
+    - name: Move coreelec OS to internal memory For MINIX BOX, to see params fw_printenv
+      shell: |
+          printf 'y\n1\ny\ny\ny\n'|ceemmc -x   && \ 
+          /usr/sbin/fw_setenv bootcmd 'if test ${bootfromnand} = 1; then setenv bootfromnand 0; saveenv; else run bootfromemmc;run bootfromsd; run bootfromusb; fi; run storeboot'
+      # ignore_errors: True
+      when: internal_storage.stdout != '/dev/CE_STORAGE' and coreelec_version is regex("20.*")
+
+    - name: Reboot a slow machine that might have lots of updates to apply
+      ansible.builtin.reboot:
+        reboot_timeout: 3600
+      when: internal_storage.stdout != '/dev/CE_STORAGE'
+
+    - name: Get os name
+      shell: "lsb_release -a |cut -d ' ' -f1|awk '{print tolower($0)}'"
+      register: system
+    - name: Print a message
+      ansible.builtin.debug:
+        msg: 'System name {{ system.stdout }}'
+    - name: Add hostname to config
+      shell: |
+        xmlstarlet edit --omit-decl -L \
+        --delete  '//system/hostname' \
+        --subnode '//system' --type elem --name hostname --value {{ hostname_box }} \
+        --insert  '//system/hostanme' --type attr --name hostname --value {{ hostname_box }} \
+        /storage/.kodi/userdata/addon_data/service.{{ system.stdout }}.settings/oe_settings.xml
+    - name: Restart kodi.service with new hostname
+      shell: systemctl restart kodi.service
+# -----------------set up webserver
+    - name: Configurate webserver and http auth
+      ansible.builtin.import_role:
+        name: webserver
+# -----------------------------------Configuration NTP server
+    - name: Configuration NTP server
+      ansible.builtin.import_role:
+        name: ntpserver
+# # -----------------INSTALL-libs
+    - import_role:
+       name: libs
+# -----------------INSTALL-CRONXBMC
+    - import_role:
+       name: cronxbmc
+# # -----------------Iptables
+    - import_role:
+       name: iptables
+#-----------------------------
+    # - name: Disable samba service
+    #   ansible.builtin.service:
+    #     name: smbd
+    #     enabled: no
+    #     state: stopped
+# -------------------------------------------------
+    - name: Return sdcard load priority
+      shell: |
+          /usr/sbin/fw_setenv bootcmd 'if test ${bootfromnand} = 1; then setenv bootfromnand 0; saveenv; else run bootfromsd; run bootfromusb; run bootfromemmc; fi; run storeboot'

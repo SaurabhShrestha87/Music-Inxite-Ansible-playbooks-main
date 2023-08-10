@@ -1,0 +1,11 @@
+/storage/.kodi/userdata/addon_data/service.cronxbmc/cron.xml
+
+no issue in autoexec file for the box 106
+
+solution -delete the content of the file  *** cron.xml ***\
+
+to rssolve this issue permanently
+
+in box legacy.xml
+we have to exclude      - import_role name: cronxbmc
+have to work on it

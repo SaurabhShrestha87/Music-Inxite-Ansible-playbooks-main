@@ -1,0 +1,134 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  vars_prompt:
+    - name: target_host
+      prompt: please enter the target host IP
+      private: no
+      default: "127.0.0.1:2222"
+    - add_host:
+        name: "{{ target_host }}"
+        groups: dynamically_created_hosts
+    - name: Print a message
+      ansible.builtin.debug:
+        msg: 'Logging to {{ hostname_box }}'
+- hosts: dynamically_created_hosts
+  vars_prompt:
+    - name: hostname
+      prompt: Please insert hostname for new box without domain?
+      private: no
+      default: "test"
+  vars:
+        hostname_box: "{{ hostname }}.musicinxite.com"
+        addon_file: "cronxbmc-0.1.4.zip"
+  tasks:
+    - name: Get os name
+      shell: "lsb_release -a |cut -d ' ' -f1|awk '{print tolower($0)}'"
+      register: system
+    - name: Print a message
+      ansible.builtin.debug:
+        msg: 'System name {{ system.stdout }}'
+    - name: Wait for server to restart
+      reboot:
+        reboot_timeout: 3600
+    - name: Disable samba service
+      ansible.builtin.service:
+        name: smbd
+        enabled: no
+        state: stopped
+    - name: Add hostname to config
+      shell: |
+        xmlstarlet edit --omit-decl -L \
+        --delete  '//system/hostname' \
+        --subnode '//system'      --type elem --name hostname --value {{ hostname_box }} \
+        /storage/.kodi/userdata/addon_data/service.{{ system.stdout }}.settings/oe_settings.xml
+    # - name: Populate service facts
+    #   service_facts:
+      # meta: end_play
+    # - debug:
+    #     msg: openvpn installed and running!
+    #   when: ansible_facts.services['openvpn-pritunl.service'] is defined and ansible_facts.services["openvpn-pritunl.service"].state == "running"
+    # - debug:
+        # msg: Openvpn already set up.
+      # when: ansible_facts.services['openvpn-pritunl.service'] is defined and ansible_facts.services["openvpn-pritunl.service"].state == "running"
+
+    # - name: Stop for this host if service already work
+      # meta: end_host
+      # when: ansible_facts.services['openvpn-pritunl.service'] is defined and ansible_facts.services["openvpn-pritunl.service"].state == "running"
+
+    # - name: Check opevpn-pritunl service
+      # ansible.builtin.service:
+      #   name: openvpn-pritunl.service
+      #   enabled: no
+      #   state: stopped
+    # - name: Get hostname from box
+    #   shell: echo $HOSTNAME
+    #   register: hostname_box
+# --------------------------------OPENVPN---NEED MOVE TO ROLE
+    - name: Copy openvpn-pritunl.service file
+      copy:
+        src: 'openvpn/{{ item }}'
+        dest: '/storage/.config/system.d/{{ item }}'
+        force: no 
+      loop:
+      - openvpn-pritunl.service
+    - name: Print the var
+      debug:
+        var: hostname_box
+    - name: Copy key_archive to host
+      copy: 
+        src: "openvpn/keys/{{ hostname_box }}.tar"
+        dest: "/tmp/"
+        force: no 
+    - name: Extract remote archive keys to box #because busy box
+      shell: "cd /tmp/;tar xvf {{ hostname_box }}.tar"
+      register: filename
+    - name: Move File key.ovpn to ./config path
+      command: "mv -f /tmp/{{ filename.stdout }} /storage/.config/openvpn-pritunl.config"
+    - name: systemd reload
+      systemd:
+        daemon_reload: yes
+    - name: Start printul service and enable it
+      ansible.builtin.service:
+        name: openvpn-pritunl.service
+        enabled: yes
+        state: started
+    - name: remove key archive from box
+      shell: "rm  /tmp/{{ hostname_box }}.tar"
+
+
+# --------------------------------CRONXBMC
+    - name: Copy cronxbmc archive file
+      copy:
+        src: 'cronxbmc/{{ item }}'
+        dest: '/tmp/{{ item }}'
+        force: no 
+      loop:
+      - "{{ addon_file }}"
+
+    - name: Extract cronxbmc plugin #because busy box
+      shell: "cd /tmp/;unzip -o {{ addon_file }} -d /storage/.kodi/addons/;rm /tmp/{{ addon_file }}"
+
+    - name: Copy autoexec.py file
+      copy:
+        src: 'cronxbmc/{{ item }}'
+        dest: '/storage/.kodi/userdata/{{ item }}'
+        force: yes 
+      loop:
+      - autoexec.py
+    - name: create directory with parent directories
+      file:
+        path: /storage/.kodi/userdata/service.cronxbmc/
+        state: directory
+    - name: Copy autoexec.py file
+      copy:
+        src: 'cronxbmc/{{ item }}'
+        dest: '/storage/.kodi/userdata/service.cronxbmc/{{ item }}'
+        force: yes 
+      loop:
+      - cron.xml
+    - name: Update local addons, restart kodi
+      shell: kodi-send --action="UpdateLocalAddons";systemctl restart kodi.service
+    - name: Enable plugin
+      shell: |
+        curl -s -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"service.cronxbmc","enabled":true},"id":1}' http://127.0.0.1:8080/jsonrpc

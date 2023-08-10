@@ -1,0 +1,7 @@
+    - name: Change kodi timezone for new version
+      ansible.builtin.shell: |
+       curl 'http://127.0.0.1:8080/jsonrpc?Base' \
+       -H 'Authorization: Basic {{ http_token.stdout }}' \  
+       -H 'Content-Type: application/json' \
+       -H 'X-Requested-With: XMLHttpRequest' \
+       -d '[{"jsonrpc":"2.0","method":"Settings.SetSettingValue","params":["locale.timezonecountry","{{ box_timezone }}"],"id":61}]'
