@@ -10,8 +10,8 @@
 
     - name: Extract libs plugins #because busy box
       shell: |
-        cd /tmp/;unzip -o {{ module_six_addon_file }} -d /storage/.kodi/addons/;rm /tmp/{{ module_six_addon_file }}
-        cd /tmp/;unzip -o {{ dateutil_addon_file }} -d /storage/.kodi/addons/;rm /tmp/{{ dateutil_addon_file }}
+        cd /tmp/;unzip -o {{ module_six_addon_file }} -d ~/.kodi/addons/;rm /tmp/{{ module_six_addon_file }}
+        cd /tmp/;unzip -o {{ dateutil_addon_file }} -d ~/.kodi/addons/;rm /tmp/{{ dateutil_addon_file }}
 
     - name: Update local addons,install new libs, restart kodi
       shell: kodi-send --action="UpdateLocalAddons";sleep 10;systemctl restart kodi

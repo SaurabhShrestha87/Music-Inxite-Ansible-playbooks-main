@@ -3,32 +3,32 @@
 
     - name: Enable webserver,change config.
       lineinfile:
-        path: /storage/.kodi/userdata/guisettings.xml
+        path: ~/.kodi/userdata/guisettings.xml
         regexp: '<setting id="services.webserver".*'
         line: '<setting id="services.webserver" default="true">true</setting>'
 
     - name: Enable webserver auth,changin config.
       lineinfile:
-        path: /storage/.kodi/userdata/guisettings.xml
+        path: ~/.kodi/userdata/guisettings.xml
         regexp: '<setting id="services.webserverauthentication">.*'
         line: '<setting id="services.webserverauthentication">true</setting>'
 
     - name: Webserver change auth password.
       lineinfile:
-        path: /storage/.kodi/userdata/guisettings.xml
+        path:  ~/.kodi/userdata/guisettings.xml
         regexp: '<setting id="services.webserverpassword.*'
         line: '<setting id="services.webserverpassword">{{http_password}}</setting>'
 
     - name: Webserver change auth username.
       lineinfile:
-        path: /storage/.kodi/userdata/guisettings.xml
+        path:  ~/.kodi/userdata/guisettings.xml
         regexp: '<setting id="services.webserverusername".*'
         line: '<setting id="services.webserverusername" default="true">kodi</setting>'
 
     - name: Copy advancedsettings archive file
       copy:
         src: '{{ item }}'
-        dest: '/storage/.kodi/userdata/{{ item }}'
+        dest: ' ~/.kodi/userdata/{{ item }}'
         force: no
       loop:
       - "advancedsettings.xml"

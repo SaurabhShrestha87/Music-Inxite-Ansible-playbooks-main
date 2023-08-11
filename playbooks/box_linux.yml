@@ -76,6 +76,9 @@
 #      tags: default_openvpn
 
     - import_role:
+        name: autologin
+
+    - import_role:
         name: kodi
 
     - name: Add hostname to config

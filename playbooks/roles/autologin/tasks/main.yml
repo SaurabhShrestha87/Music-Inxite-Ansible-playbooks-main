@@ -1,0 +1,18 @@
+---
+- name: Update GDM custom.conf for automatic login
+  become: yes
+  lineinfile:
+    path: /etc/gdm3/custom.conf
+    regexp: '^#?AutomaticLoginEnable='
+    line: 'AutomaticLoginEnable = true'
+- name: Set automatic login username
+  become: yes
+  lineinfile:
+    path: /etc/gdm3/custom.conf3
+    regexp: '^#?AutomaticLogin='
+    line: 'AutomaticLogin = {{ hostname_box }}'
+- name: Restart GDM
+  become: yes
+  systemd:
+    name: gdm
+    state: restarted
