@@ -7,5 +7,7 @@
 - name: Install Kodi
   become: yes
   package:
-    name: kodi
+    name:
+      - kodi
+      - kodi-eventclients-kodi-send
     state: present

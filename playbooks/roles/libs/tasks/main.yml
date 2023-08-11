@@ -14,4 +14,4 @@
         cd /tmp/;unzip -o {{ dateutil_addon_file }} -d ~/.kodi/addons/;rm /tmp/{{ dateutil_addon_file }}
 
     - name: Update local addons,install new libs, restart kodi
-      shell: kodi-send --action="UpdateLocalAddons";sleep 10;systemctl restart kodi
+      shell: nohup kodi-send --action="Quit" && sleep 10 && kodi > /dev/null 2>&1 &

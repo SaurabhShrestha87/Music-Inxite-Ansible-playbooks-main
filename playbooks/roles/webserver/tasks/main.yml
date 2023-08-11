@@ -1,6 +1,3 @@
-    - name: stop kodi service
-      shell: systemctl stop kodi.service
-
     - name: Enable webserver,change config.
       lineinfile:
         path: ~/.kodi/userdata/guisettings.xml
@@ -28,13 +25,16 @@
     - name: Copy advancedsettings archive file
       copy:
         src: '{{ item }}'
-        dest: ' ~/.kodi/userdata/{{ item }}'
-        force: no
+        dest: '{{ ansible_env.HOME }}/.kodi/userdata/{{ item }}'
+        force: yes
       loop:
       - "advancedsettings.xml"
+      become: true
 
-    - name: start kodi service
-      shell: systemctl start kodi.service
+    - name: Wait for server to restart
+      reboot:
+        reboot_timeout: 3600
+      become: true
 
     - name: Wait until HTTP webserver UP and status is 401
       uri:

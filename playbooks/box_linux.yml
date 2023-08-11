@@ -40,7 +40,7 @@
       shell: echo -n '{{ http_user }}:{{ http_password }}'|base64
       register: http_token
 
-    - name: Check openvpn keys in playbooks/roles/openvpn/fiels/keys
+    - name: Check openvpn keys in playbooks/roles/openvpn/files/keys
       delegate_to: localhost
       stat:
         path: "{{ inventory_dir.stdout }}/roles/openvpn/files/keys/{{ hostname_box }}.tar"
@@ -76,21 +76,11 @@
 #      tags: default_openvpn
 
     - import_role:
-        name: autologin
-
-    - import_role:
         name: kodi
 
-    - name: Add hostname to config
-      shell: |
-        xmlstarlet edit --omit-decl -L \
-        --delete  '//system/hostname' \
-        --subnode '//system' --type elem --name hostname --value {{ hostname_box }} \
-        --insert  '//system/hostanme' --type attr --name hostname --value {{ hostname_box }} \
-        ~/.kodi/userdata/addon_data/service.{{ system.stdout }}.settings/oe_settings.xml
-    - name: Restart kodi.service with new hostname
-      shell: systemctl restart kodi.service
-    # -----------------set up webserver
+    - import_role:
+        name: autologin
+
     - name: Configurate webserver and http auth
       ansible.builtin.import_role:
         name: webserver

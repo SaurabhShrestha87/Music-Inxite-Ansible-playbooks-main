@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Exec=kodi-standalone
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[en_US]=Kodi
+Name=Kodi
+Comment[en_US]=Start Kodi on login
+Comment=Start Kodi on login

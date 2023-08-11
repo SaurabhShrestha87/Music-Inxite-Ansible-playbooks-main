@@ -1,18 +1,31 @@
 ---
-- name: Update GDM custom.conf for automatic login
-  become: yes
+- name: Copy Kodi Autostart Desktop File
+  copy:
+    src: 'files/{{ item }}'
+    dest: '{{ ansible_env.HOME }}/.config/autostart/{{ item }}'
+    force: yes
+  loop:
+    - kodi.desktop
+  become: true
+
+- name: Disable login screen from gdm3/custom.conf File to enable autologin
   lineinfile:
     path: /etc/gdm3/custom.conf
-    regexp: '^#?AutomaticLoginEnable='
-    line: 'AutomaticLoginEnable = true'
-- name: Set automatic login username
-  become: yes
+    regexp: '^\[daemon\]'
+    line: '[daemon]'
+    insertafter: EOF
+  become: true
+
+- name: Enable autologin in gdm3/custom.conf
   lineinfile:
-    path: /etc/gdm3/custom.conf3
-    regexp: '^#?AutomaticLogin='
-    line: 'AutomaticLogin = {{ hostname_box }}'
-- name: Restart GDM
-  become: yes
-  systemd:
-    name: gdm
-    state: restarted
+    path: /etc/gdm3/custom.conf
+    regexp: '^#?\s*AutomaticLoginEnable\s*='
+    line: 'AutomaticLoginEnable=True'
+  become: true
+
+- name: Set autologin username in gdm3/custom.conf
+  lineinfile:
+    path: /etc/gdm3/custom.conf
+    regexp: '^#?\s*AutomaticLogin\s*='
+    line: 'AutomaticLogin={{ hostname }}'
+  become: true
