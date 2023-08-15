@@ -86,11 +86,20 @@
     jump: DROP
   become: true
 
-- name: Save iptables rules
-  shell: "iptables-save >/storage/.config/iptables/rules.v4"
+- name: Install iptables-persistent package
+  become: true
+  package:
+    name: iptables-persistent
+    state: present
 
 - name: Save iptables rules
-  shell: "echo 'iptables-restore </storage/.config/iptables/rules.v4' > /storage/.config/autostart.sh"
+  shell: "iptables-save > /etc/iptables/rules.v4"
+  become: true
+
+- name: Save iptables rules
+  shell: "echo 'iptables-restore < /etc/iptables/rules.v4' > {{ ansible_env.HOME }}/.config/autostart.sh"
+  become: true
 
 - name: Enable iptables
   shell: "systemctl unmask iptables"
+  become: true

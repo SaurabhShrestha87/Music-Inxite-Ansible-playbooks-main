@@ -63,37 +63,13 @@
     - name: Print ansible_distribution
       ansible.builtin.debug:
         msg: 'System ansible_distribution : {{ ansible_distribution }}'
-    #------------------Set up openvpn
-#    - name: Run OS-specific tasks for OpenVPN setup
-#      include_tasks: "roles/openvpn_{{ ansible_distribution | lower }}/tasks/main.yml"
-#      when: "'{{ ansible_distribution }}' in ['Arch', 'CentOS', 'Debian', 'OracleLinux', 'Fedora', 'Ubuntu']"
-#      tags: os_specific_openvpn
-#
-#    - name: Run default OpenVPN setup if OS is not in the list
-#      import_role:
-#        name: openvpn_core_libre_elec
-#      when: "'{{ ansible_distribution }}' not in ['Arch', 'CentOS', 'Debian', 'OracleLinux', 'Fedora', 'Ubuntu']"
-#      tags: default_openvpn
+#------------------ Set up openvpn
+    - import_role:
+        name: openvpn_debian
 
     - import_role:
         name: kodi
 
-    - import_role:
-        name: autologin
-
-    - name: Configurate webserver and http auth
-      ansible.builtin.import_role:
-        name: webserver
-    # -----------------------------------Configuration NTP server
-    - name: Configuration NTP server
-      ansible.builtin.import_role:
-        name: ntpserver
-    # # -----------------INSTALL-libs
-    - import_role:
-        name: libs
-    # -----------------INSTALL-CRONXBMC
-    - import_role:
-        name: cronxbmc
     # # -----------------Iptables
     - import_role:
         name: iptables

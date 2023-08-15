@@ -17,7 +17,7 @@
         src: 'cronxbmc/autoexec_new_gen.py'
         dest: '{{ ansible_env.HOME }}/.kodi/addons/service.autoexec/autoexec.py'
         force: yes
-
+      become : yes
     #cronxbmc service
     - name: Copy cronxbmc archive file
       copy:
@@ -26,14 +26,17 @@
         force: no 
       loop:
       - "{{ cronxbmc_addon_file }}"
+      become : yes
 
     - name: Extract cronxbmc plugin #because busy box
       shell: "cd /tmp/;unzip -o {{ cronxbmc_addon_file }} -d {{ ansible_env.HOME }}/.kodi/addons/;rm /tmp/{{ cronxbmc_addon_file }}"
+      become : yes
 
     - name: create directory with parent directories
       file:
         path: "{{ ansible_env.HOME }}/.kodi/userdata/addon_data/service.cronxbmc/"
         state: directory
+      become : yes
 
     - name: Copy cron.xml file
       copy:
@@ -42,23 +45,29 @@
         force: yes 
       loop:
       - cron.xml
+      become : yes
 
-    - name: Update local addons, restart kodi
-      shell: kodi-send --action="UpdateLocalAddons"; kodi-send --action="Quit"; kodi-standalone;
+    - name: Wait for server to restart
+      reboot:
+        reboot_timeout: 3600
+      become: true
+
+    - name: Wait until HTTP webserver UP and status is 401
+      uri:
+        url: 'http://127.0.0.1:8080/'
+        return_content: yes
+        validate_certs: no
+        status_code:
+          - 401
+      until: uri_output.status == 401
+      retries: 10 # Retries for 24 * 5 seconds = 120 seconds = 2 minutes
+      delay: 5 # Every 5 seconds
+      register: uri_output
 
     - name: Enable cronxbmc plugin for new version Coreelec
       ansible.builtin.shell: |
-       sleep 5;curl 'http://127.0.0.1:8080/jsonrpc?Base' -s \
-       -H 'Authorization: Basic {{ http_token.stdout }}' \
-       -H 'Content-Type: application/json' \
-       -H 'X-Requested-With: XMLHttpRequest' \
-       -d '[{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":["service.cronxbmc",true],"id":8}]'
+        sleep 5; kodi-send --action="Addons.SetAddonEnabled(service.cronxbmc,true)"
 
     - name: Enable autoexec plugin for new version Coreelec
       ansible.builtin.shell: |
-       curl 'http://127.0.0.1:8080/jsonrpc?Base' -s \
-       -H 'Authorization: Basic {{ http_token.stdout }}' \
-       -H 'Content-Type: application/json' \
-       -H 'X-Requested-With: XMLHttpRequest' \
-       -d '[{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":["service.autoexec",true],"id":8}]' 
-      when: coreelec_version.stdout != "9.2"
+        sleep 5; kodi-send --action="Addons.SetAddonEnabled(service.autoexec,true)"
