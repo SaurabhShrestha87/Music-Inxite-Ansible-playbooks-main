@@ -4,6 +4,6 @@
   <job addon="service.cronxbmc" command="SetVolume(90)" expression="01 15 * * *" id="1" name="4-test" show_notification="false"/>
   <job addon="service.cronxbmc" command="PlayMedia(/storage/music/2-test, isdir)" expression="0 14 * * *" id="2" name="2-test" show_notification="false"/>
   <job addon="service.cronxbmc" command="SetVolume(100)" expression="01 14 * * *" id="3" name="3-test" show_notification="false"/>
-  <job addon="service.cronxbmc" command="PlayMedia(/storage/music/2-test, isdir)" expression="0 5 * * *" id="4" name="2-test1" show_notification="false"/>
+  <job addon="service.cronxbmc" command="PlayMedia(/storage/music/2-test, isdir)" expression="0 5 * * *" id="40" name="2-test1" show_notification="false"/>
   <job addon="service.cronxbmc" command="SetVolume(80)" expression="01 5 * * *" id="5" name="4-test" show_notification="false"/>
 </cron>

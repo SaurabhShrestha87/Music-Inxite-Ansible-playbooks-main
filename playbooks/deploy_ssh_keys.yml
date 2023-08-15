@@ -1,7 +1,0 @@
----
-# - hosts: digital-ocean-servers:boxes
-- name: Including ssh-keys role 
-  hosts: boxes
-  # hosts: digital-ocean-servers:boxes
-  roles: 
-    - role: ssh_keys

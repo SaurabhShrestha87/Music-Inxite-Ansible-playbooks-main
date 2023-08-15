@@ -4,7 +4,7 @@
     - name: target_host
       prompt: please enter the target host IP
       private: false
-      default: "192.168.1.100"
+      default: "192.168.1.101"
   tasks:
     - add_host:
         name: "{{ target_host }}"
@@ -54,7 +54,7 @@
       register: linux_version
     - debug:
         msg: linux version = {{ linux_version.stdout }}
-    - name: Get os name
+    - name: Get os nameyes
       shell: "lsb_release -a |cut -d ' ' -f1|awk '{print tolower($0)}'"
       register: system
     - name: Print system details
@@ -63,13 +63,25 @@
     - name: Print ansible_distribution
       ansible.builtin.debug:
         msg: 'System ansible_distribution : {{ ansible_distribution }}'
-#------------------ Set up openvpn
-    - import_role:
-        name: openvpn_debian
+#------------------Set up openvpn
+#    - import_role:
+#        name: openvpn
 
     - import_role:
         name: kodi
 
+    - import_role:
+        name: autologin
+
+    - name: Configurate webserver and http auth
+      ansible.builtin.import_role:
+        name: webserver
+    # -----------------------------------Configuration NTP server
+    - name: Configuration NTP server
+      ansible.builtin.import_role:
+        name: ntpserver
+    - import_role:
+        name: cronxbmc
     # # -----------------Iptables
     - import_role:
         name: iptables

@@ -1,11 +1,9 @@
 # musicinxite
-This repository use to control infrastructer.  
+This repository use to control debian/ubuntu.
 
-to upload ssh keys run ```ansible-playbook playbooks/deploy_ssh_keys.yml -i inventory ```  
-to upload new openvpn_pritunl.service, openvpn-pritunl.config run ```ansible-playbook playbooks/openvpn.yml -i inventory ```  
-to set up new box ```ansible-playbook playbooks/box_legacy_install.yml```  
-to set up new box with OS corelec matrix rc2 ```ansible-playbook playbooks/box_new_generation_install.yml```  
-to set up new box with OS corelec matrix for tanix boxes ```ansible-playbook playbooks/box_new_generation_install_tanix.yml```  
-add password to webinterface if you want you can change it variable http_password: "testpassword"  
-to set up iptables ```ansible-playbook playbooks/deploy_iptables.yml```    
-[Docs in google disk](https://docs.google.com/document/d/1gRGXoC6bLkBw5WKaQ_CWP45kO4KawLbBspukGKyAeLc/edit#)
+to set up new box with OS
+
+1. Setup ssh connection from target system. Open terminal at the folder containing ssh_script and run ```sh ssh_script.sh```  
+
+2. In your local system, use ```ansible-playbook playbooks/box_linux.yml```
+3. Press enter and change any values if needed (Host target name will be different for your device, which is the name of the target's login username).

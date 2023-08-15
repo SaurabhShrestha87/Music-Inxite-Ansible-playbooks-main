@@ -33,7 +33,7 @@
 
     - name: Wait for server to restart
       reboot:
-        reboot_timeout: 3600
+        reboot_timeout: 7200
       become: true
 
     - name: Wait until HTTP webserver UP and status is 401
